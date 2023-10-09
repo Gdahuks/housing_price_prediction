@@ -1,0 +1,16 @@
+[tool.poetry.dependencies]
+python = "3.11.5
+
+[tool.pylint]
+max-line-length = 120
+
+[tool.black]
+line-length = 120
+
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+ignore_missing_imports = true
+disable_error_code = ["import"]

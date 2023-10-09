@@ -1,0 +1,6 @@
+fastapi~=0.99.1
+beautifulsoup4~=4.12.2
+uvicorn~=0.20.0
+lxml~=4.9.3
+requests~=2.31.0
+loguru~=0.5.3
