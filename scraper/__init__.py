@@ -1,35 +1,43 @@
 from abc import abstractmethod
+from typing import Iterator
 
 import requests
+from bs4 import BeautifulSoup, ResultSet, Tag
 from loguru import logger
 
 
 class Scraper:
-
-    def __init__(self):
-        if self.url is None:
-            raise NotImplementedError("You must set url in subclass")
-        if self.default_params is None:
-            raise NotImplementedError("You must set default_params in subclass")
+    @staticmethod
+    @abstractmethod
+    def run_crawler() -> Iterator[dict]:
+        pass
 
     @staticmethod
     @abstractmethod
-    def _add_page_to_params(page: int, params: dict) -> dict:
+    def get_offers(soup: BeautifulSoup) -> ResultSet[Tag]:
         pass
 
-    def get_page(self, page: int) -> str:
-        params = self._add_page_to_params(page, self.default_params)
-        try:
-            html_text = Scraper.get_html(self.url, **{"params": params})
-            return html_text
-        except Exception as e:
-            logger.error(f"Error fetching {self.url}, params: {params}")
-            raise e from e
+    @staticmethod
+    @abstractmethod
+    def process_tag(tag: Tag) -> dict[str, str | None] | None:
+        pass
+
+    @staticmethod
+    def process_html(html_text: str) -> Iterator[dict] | None:
+        soup = BeautifulSoup(html_text)
+        offers = Scraper.get_offers(soup)
+
+        if offers is None or len(offers) == 0:
+            logger.warning("No offers found")
+            return
+
+        for offer in offers:
+            yield Scraper.process_tag(offer)
 
     @staticmethod
     def get_html(url: str, **kwargs: dict) -> str:
         logger.info(f"Fetching {url}...")
-        request = requests.get(url, **kwargs)
+        request = requests.get(url, timeout=10, **kwargs)
         if request.status_code == 200:
             logger.info(f"Success! {request.status_code}")
             return request.text
