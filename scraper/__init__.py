@@ -1,12 +1,20 @@
-from abc import abstractmethod
-from typing import Iterator
+from __future__ import annotations
+
+from abc import abstractmethod, ABC
+from typing import Iterator, Type, Final
 
 import requests
 from bs4 import BeautifulSoup, ResultSet, Tag
 from loguru import logger
 
 
-class Scraper:
+class Scraper(ABC):
+    FLOOR_ENDS_WITH_TEXT: Final[tuple[str, ...]] = (
+        "parter",
+        "parterowy",
+        "parterowe",
+        "parterowa",
+    )
     @staticmethod
     @abstractmethod
     def run_crawler() -> Iterator[dict]:
@@ -23,16 +31,16 @@ class Scraper:
         pass
 
     @staticmethod
-    def process_html(html_text: str) -> Iterator[dict] | None:
-        soup = BeautifulSoup(html_text)
-        offers = Scraper.get_offers(soup)
+    def process_html(self: Type[Scraper], html_text: str) -> Iterator[dict] | None:
+        soup = BeautifulSoup(html_text, features="lxml")
+        offers = self.get_offers(soup)
 
         if offers is None or len(offers) == 0:
             logger.warning("No offers found")
             return
 
         for offer in offers:
-            yield Scraper.process_tag(offer)
+            yield self.process_tag(offer)
 
     @staticmethod
     def get_html(url: str, **kwargs: dict) -> str:

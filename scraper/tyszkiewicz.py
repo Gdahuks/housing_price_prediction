@@ -33,12 +33,6 @@ class Tyszkiewicz(Scraper):
         "piętrowa",
         "pietrowa",
     )
-    FLOOR_ENDS_WITH_TEXT: Final[tuple[str, ...]] = (
-        "parter",
-        "parterowy",
-        "parterowe",
-        "parterowa",
-    )
     PRICE_PATTERN: Final[re.Pattern[str]] = re.compile(r"[ \d]+[,.]?\d*")
 
     max_pages: int = 100
@@ -68,10 +62,17 @@ class Tyszkiewicz(Scraper):
                     continue
 
                 try:
-                    processed_html = Tyszkiewicz.process_html(html_text)
-                    if processed_html is None:
-                        break  # no more pages
-                    yield from processed_html
+                    processed_html = Tyszkiewicz.process_html(Tyszkiewicz, html_text)
+                    first = next(processed_html)
+                    first["category"] = category.name
+                    first["source"] = Tyszkiewicz.URL
+                    yield first
+                    for offer in processed_html:
+                        offer["category"] = category.name
+                        offer["source"] = Tyszkiewicz.URL
+                        yield offer
+                except StopIteration:
+                    break # no more pages (current page with no offers). raised by next(processed_html)
                 except Exception as exception:
                     logger.error(
                         f"Error processing {Tyszkiewicz.URL}, params: {params}. \n"
