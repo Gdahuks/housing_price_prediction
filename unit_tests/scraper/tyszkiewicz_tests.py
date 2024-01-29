@@ -1,5 +1,5 @@
 import unittest
-from scraper.tyszkiwicz import Tyszkiewicz
+from scraper.tyszkiewicz import Tyszkiewicz
 
 
 # pylint: disable=protected-access

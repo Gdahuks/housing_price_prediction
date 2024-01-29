@@ -16,7 +16,7 @@ class OgloszeniaTrojmiasto(Scraper):
 
     max_pages: int = 300
     default_params: dict[str, str] = {
-        "p": "0",
+        "strona": "0",
     }
 
     @staticmethod
@@ -24,15 +24,17 @@ class OgloszeniaTrojmiasto(Scraper):
         params = OgloszeniaTrojmiasto.default_params.copy()
         for url in (OgloszeniaTrojmiasto.URL_NEW, OgloszeniaTrojmiasto.URL_SECONDARY):
             for page in range(1, OgloszeniaTrojmiasto.max_pages + 1):
-                params["p"] = str(page)
+                params["strona"] = str(page)
                 try:
-                    html_text = OgloszeniaTrojmiasto.get_html(url, **{"params": params})
+                    html_text = OgloszeniaTrojmiasto.get_html(url, 10, **{"params": params})
                 except Exception as exception:
                     logger.error(f"Error fetching {url}, params: {params}. Error: {exception}")
                     continue
 
                 try:
                     processed_html = OgloszeniaTrojmiasto.process_html(OgloszeniaTrojmiasto, html_text)
+                    if processed_html is None:
+                        break
                     first = next(processed_html)
                     first["source"] = url
                     yield first
@@ -135,7 +137,9 @@ class OgloszeniaTrojmiasto(Scraper):
 
     @staticmethod
     def _extract_area(offer_context: Tag, result_dict: dict[str, str | None]) -> None:
-        area = offer_context.find("li", class_="list__item__details__icons__element details--icons--element--powierzchnia")
+        area = offer_context.find(
+            "li", class_="list__item__details__icons__element details--icons--element--powierzchnia"
+        )
         if area is None or area.text is None:
             logger.warning(f"No area found {offer_context.text}")
             return
@@ -184,7 +188,9 @@ class OgloszeniaTrojmiasto(Scraper):
 
     @staticmethod
     def _extract_year(offer_context: Tag, result_dict: dict[str, str | None]) -> None:
-        year = offer_context.find("li", class_="list__item__details__icons__element details--icons--element--rok_budowy")
+        year = offer_context.find(
+            "li", class_="list__item__details__icons__element details--icons--element--rok_budowy"
+        )
         if year is None or year.text is None:
             logger.warning(f"No year found {offer_context.text}")
             return
@@ -195,6 +201,3 @@ class OgloszeniaTrojmiasto(Scraper):
             return
 
         result_dict["year"] = year.text.strip()
-
-for i in OgloszeniaTrojmiasto.run_crawler():
-    print(i)

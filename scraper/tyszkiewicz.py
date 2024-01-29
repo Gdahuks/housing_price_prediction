@@ -56,13 +56,15 @@ class Tyszkiewicz(Scraper):
             for page in range(1, Tyszkiewicz.max_pages + 1):
                 params["page"] = str(page)
                 try:
-                    html_text = Tyszkiewicz.get_html(Tyszkiewicz.URL, **{"params": params})
+                    html_text = Tyszkiewicz.get_html(Tyszkiewicz.URL, 10, **{"params": params})
                 except Exception as exception:
                     logger.error(f"Error fetching {Tyszkiewicz.URL}, params: {params}. Error: {exception}")
                     continue
 
                 try:
                     processed_html = Tyszkiewicz.process_html(Tyszkiewicz, html_text)
+                    if processed_html is None:
+                        break
                     first = next(processed_html)
                     first["category"] = category.name
                     first["source"] = Tyszkiewicz.URL
@@ -72,7 +74,7 @@ class Tyszkiewicz(Scraper):
                         offer["source"] = Tyszkiewicz.URL
                         yield offer
                 except StopIteration:
-                    break # no more pages (current page with no offers). raised by next(processed_html)
+                    break  # no more pages (current page with no offers). raised by next(processed_html)
                 except Exception as exception:
                     logger.error(
                         f"Error processing {Tyszkiewicz.URL}, params: {params}. \n"
@@ -240,7 +242,3 @@ class Tyszkiewicz(Scraper):
             logger.warning(f"More than one year found: {year}")
         else:
             logger.info(f"No year found: {fields}")
-
-
-for i in Tyszkiewicz.run_crawler():
-    print(i)

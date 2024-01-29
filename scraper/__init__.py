@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from abc import abstractmethod, ABC
 from typing import Iterator, Type, Final
 
@@ -15,6 +16,7 @@ class Scraper(ABC):
         "parterowe",
         "parterowa",
     )
+
     @staticmethod
     @abstractmethod
     def run_crawler() -> Iterator[dict]:
@@ -31,24 +33,33 @@ class Scraper(ABC):
         pass
 
     @staticmethod
-    def process_html(self: Type[Scraper], html_text: str) -> Iterator[dict] | None:
+    def process_html(  # pylint: disable=inconsistent-return-statements
+        self_type: Type[Scraper], html_text: str
+    ) -> Iterator[dict] | None:
         soup = BeautifulSoup(html_text, features="lxml")
-        offers = self.get_offers(soup)
+        offers = self_type.get_offers(soup)
 
         if offers is None or len(offers) == 0:
             logger.warning("No offers found")
-            return
+            return None
 
         for offer in offers:
-            yield self.process_tag(offer)
+            yield self_type.process_tag(offer)
 
     @staticmethod
-    def get_html(url: str, **kwargs: dict) -> str:
-        logger.info(f"Fetching {url}...")
+    def get_html(url: str, sleep: int = 10, **kwargs: dict) -> str:
+        if sleep > 150:
+            raise RuntimeError("Sleep time exceeded 150 seconds")
+        logger.info(f"Fetching {url}... {kwargs}")
         request = requests.get(url, timeout=10, **kwargs)
         if request.status_code == 200:
             logger.info(f"Success! {request.status_code}")
             return request.text
+        if request.status_code == 429:
+            logger.warning(f"Too many requests (429). Sleeping for {sleep} seconds")
+            time.sleep(sleep)
+            sleep *= 2
+            return Scraper.get_html(url, sleep, **kwargs)
 
         logger.error(f"Error fetching {url}: status code {request.status_code}")
         raise RuntimeError(f"Error fetching {url}: status code {request.status_code}")
