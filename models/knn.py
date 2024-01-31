@@ -1,3 +1,3 @@
 from sklearn.neighbors import KNeighborsRegressor
 
-k_neighbors_regressor = KNeighborsRegressor(n_neighbors=7)
+k_neighbors_regressor = KNeighborsRegressor()  # you can specify model's hyperparameters here
