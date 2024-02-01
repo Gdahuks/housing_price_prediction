@@ -1,0 +1,5 @@
+outs:
+- md5: 043eb80e7f6864d443575100e3ae18f1
+  size: 32856942
+  hash: md5
+  path: model.sav
