@@ -1,5 +1,5 @@
 outs:
-- md5: 52c992bc523f1c721966644314cbd3b6
-  size: 1170255360
+- md5: 326c1f617c7b00e0c935be2fb7525ca9
+  size: 1170206720
   hash: md5
   path: docker_image.tar

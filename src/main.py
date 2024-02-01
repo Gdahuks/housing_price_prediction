@@ -7,6 +7,7 @@ import pickle  # nosec
 from dotenv.main import load_dotenv
 
 load_dotenv()
+load_dotenv("../.env")
 from fastapi import FastAPI, HTTPException, APIRouter, Query
 from fastapi.responses import JSONResponse
 import uvicorn
@@ -79,7 +80,7 @@ def train(
     try:
         data = get_data_from_all_blobs()
         if model:
-            model_type = ModelEnum.__getitem__(model.value.upper())
+            model_type = ModelEnum.__getitem__(model.value.upper())  # pylint: disable=unnecessary-dunder-call
         else:
             model_type = ModelEnum.get_default()
 
