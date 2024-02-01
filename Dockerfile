@@ -10,7 +10,7 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Copy all files after installing requirements.txt to optimize caching
-COPY . .
+COPY src/ .
 
 # Create a non-root user to run the app for security reasons
 RUN groupadd -r app_group && \
