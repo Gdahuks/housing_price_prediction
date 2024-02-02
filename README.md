@@ -19,7 +19,7 @@ It scrapes data from 2 big real-state listing portals, saves it into Azure Blob 
 
 The architecture of the system is depicted in the diagram below:
 
-![system diagram](https://i.ibb.co/Qd0YfHc/Unknown.jpg)
+![system diagram](./assets/system_design.jpeg)
 
 ### Note
 
