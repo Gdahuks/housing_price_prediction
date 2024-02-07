@@ -63,29 +63,24 @@ This project is designed to showcase our Python skills. We prioritize model clar
 
 ### Deploy with Docker (recommended)
 
-With Access to Azure Blob Storage with Images:
-
-1. Create a `config.local` file in the `.dvc/` directory and update it with your credentials for the image container following the `.dvc/config.local.template` file.
-2. Run `dvc pull` to download data from Azure Blob Storage.
-3. Run `docker load < docker_images/docker_image.tar` to load the Docker image.
-4. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file.
-5. Run `docker run -d --publish 8000:8000 --env-file .env housing_price_prediction` to run Docker container on port 8000.
-6. Visit [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs) to explore the API documentation. (Since Swagger does not support Body in GET, for predictions you should use another tool such as Postman).
-
-
-Without Access to Azure Blob Storage with Images (Azure Blob Storage still required):
-
-1. Run `docker build -t housing_price_prediction  . ` to build the Docker image.
-2. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file.
+1. Run `docker pull gdahuks/housing_price_prediction` to pull the Docker image from Docker Hub. Alternatively, you can build the image yourself (needed if target platform is not linux/amd64 or linux/arm64) by running `docker build -t housing_price_prediction  .` in the project's root directory.
+2. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file. Alternatively, you can pass the environment variables directly to the `docker run` command (see step 3).
 3. Run `docker run -d --publish 8000:8000 --env-file .env housing_price_prediction` to run Docker container on port 8000.
 4. Visit [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs) to explore the API documentation. (Since Swagger does not support Body in GET, for predictions you should use another tool such as Postman).
+
 
 ### Deploy locally
 
 1. Install requirements from the `requirements.txt` file.
-2. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file.
+2. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file. Alternatively, you can pass the environment variables directly to the `docker run` command (see step 3).
 3. Run `docker run -d --publish 8000:8000 --env-file .env housing_price_prediction` to run Docker container on port 8000.
 4. Visit [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs) to explore the API documentation. (Since Swagger does not support Body in GET, for predictions you should use another tool such as Postman).
+
+
+### Download already trained model
+
+1. Create a `config.local` file in the `.dvc/` directory and update it with your credentials to trained model in Azure Blob Storage (url with SAS token) the `.dvc/config.local.template` file.
+2. Run `dvc pull` to download data from Azure Blob Storage.
 
 ## License
 
