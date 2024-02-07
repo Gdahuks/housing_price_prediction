@@ -63,7 +63,7 @@ This project is designed to showcase our Python skills. We prioritize model clar
 
 ### Deploy with Docker (recommended)
 
-1. Run `docker pull gdahuks/housing_price_prediction` to pull the Docker image from Docker Hub. Alternatively, you can build the image yourself (needed if target platform is not linux/amd64 or linux/arm64) by running `docker build -t housing_price_prediction  .` in the project's root directory.
+1. Run `docker pull gdahuks/housing_price_prediction` to pull the Docker image from [Docker Hub](https://hub.docker.com/r/gdahuks/housing_price_prediction). Alternatively, you can build the image yourself (needed if target platform is not linux/amd64 or linux/arm64) by running `docker build -t housing_price_prediction  .` in the project's root directory.
 2. Create a `.env` file and update it with credentials for the container storing scraping results following the `.env.template` file. Alternatively, you can pass the environment variables directly to the `docker run` command (see step 3).
 3. Run `docker run -d --publish 8000:8000 --env-file .env housing_price_prediction` to run Docker container on port 8000.
 4. Visit [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs) to explore the API documentation. (Since Swagger does not support Body in GET, for predictions you should use another tool such as Postman).
